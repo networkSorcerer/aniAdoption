@@ -1,0 +1,10 @@
+@charset "UTF-8";
+#pwdChk{visibility:hidden;}
+
+textarea{resize:none;}
+.table-height{min-height: 453px;}
+.required{color: red;}
+
+#item-template {
+	display : none;
+}

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.adoption.dao.AdoptionDAO">
+	<resultMap type="adoption" id="adoptionMap">
+		<id column="adoption_id" property="adoptionId"/>
+		<result column="adoption_title" property="adoptionTitle"/>
+		<result column="adoption_content" property="adoptionContent"/>
+		<result column="adoption_date" property="adoptionDate"/>	
+		<result column ="animal_id" property="animalId"/>
+		<result column="admin_id" property="adminId"/>
+		<result column="adoption_cnt" property="adoptionCnt"/>
+		<result column="adoption_status" property="adoptionStatus"/>
+		<result column="adoption_level" property="adoptionLevel"/>
+	</resultMap>
+		
+	<!-- <select id="adoptionList" parameterType="adoption" resultMap="adoptionMap">
+		select adoption_id, animal_id, adoption_title, adoption_content,
+		to_char(adoption_date, 'YYYY-MM-DD HH24:MI:SS') as adoption_date
+		from adoption
+		where adoption_id = #{adoptionId}
+		order by adoption_id desc
+	</select> -->
+	
+	<select id="adoptionList" parameterType="adoption" resultMap="adoptionMap" resultType="adoption">
+	   select adoption_id, animal_id, adoption_title, adoption_content,
+		to_char(adoption_date, 'YYYY-MM-DD HH24:MI:SS') as adoption_date
+		from adoption
+		where animal_id = #{animalId}
+		order by adoption_id desc
+	</select>
+	
+	
+	<insert id="adoptionInsert" parameterType="adoption">
+		<selectKey keyProperty="adoptionId" resultType="int" order="BEFORE">
+			select adoption_seq.nextval from dual
+		</selectKey>
+			insert into adoption(
+				adoption_id, animal_id, adoption_title, adoption_content, adoption_passwd
+			)values(
+				#{adoptionId},#{animalId},#{adoptionTitle},#{adoptionContent},#{adoptionPasswd}
+			)
+	</insert>
+	
+	<delete id="adoptionDelete" parameterType="adoption">
+		delete from adoption where adoption_id = #{adoptionId}
+	</delete>
+	
+	<update id = "adoptionUpdate" parameterType="adoption">
+		update adoption
+		set adoption_content = #{adoptionContent}
+			,adoption_date = sysdate
+			<if test="adoptionPasswd != ''">
+				,adoption_passwd = #{adoptionPasswd}
+			</if>
+		where adoption_id = #{adoptionId}
+	</update>
+	
+	<!-- 댓글 개수 구하기 -->
+	<select id="adoptionCount" parameterType="int" resultType="int">
+		select count(adoption_id) from adoption where animal_id = #{animalId}
+	</select>
+	<!-- 댓글 삭제(게시글 번호로 댓글 전체 삭제) -->
+	<select id="adoptionChoiceDelete" parameterType="adoption">
+		delete from adoption where animal_id = #{animalId}
+	</select>
+</mapper>
